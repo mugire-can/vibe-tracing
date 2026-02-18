@@ -1,3 +1,6 @@
+build/
+*.o
+*.a
 *.o
 *.ppm
 raytracer
