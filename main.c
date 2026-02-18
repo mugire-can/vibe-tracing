@@ -3,19 +3,22 @@
 #include <math.h>
 #include <time.h>
 #include <pthread.h>
+#include <string.h>
 #include "vec3.h"
 #include "ray.h"
 #include "color.h"
 #include "camera.h"
 #include "material.h"
 #include "sphere.h"
+#include "plane.h"
+#include "triangle.h"
 #include "scene.h"
 
 // Image settings
 #define ASPECT_RATIO (16.0 / 9.0)
-#define IMAGE_WIDTH 800
+#define IMAGE_WIDTH 1200
 #define IMAGE_HEIGHT ((int)(IMAGE_WIDTH / ASPECT_RATIO))
-#define SAMPLES_PER_PIXEL 100
+#define SAMPLES_PER_PIXEL 50
 #define MAX_DEPTH 50
 #define NUM_THREADS 8
 
@@ -92,9 +95,25 @@ void *render_rows(void *arg) {
 void create_random_scene() {
     scene_init(&world);
     
-    // Ground
+    // Ground plane (replaces ground sphere for better performance)
     material ground_mat = {MATERIAL_LAMBERTIAN, {0.5, 0.5, 0.5}, 0, 0};
-    scene_add_sphere(&world, (sphere){{0, -1000, 0}, 1000, ground_mat});
+    scene_add_plane(&world, (plane){{0, 0, 0}, {0, 1, 0}, ground_mat});
+    
+    // Add a pyramid using triangles
+    material pyramid_mat = {MATERIAL_METAL, {0.9, 0.5, 0.1}, 0.1, 0};
+    point3 base[4] = {
+        {6, 0, -2},
+        {8, 0, -2},
+        {8, 0, 0},
+        {6, 0, 0}
+    };
+    point3 apex = {7, 2, -1};
+    
+    // Four triangular faces of pyramid
+    scene_add_triangle(&world, triangle_create(base[0], base[1], apex, pyramid_mat));
+    scene_add_triangle(&world, triangle_create(base[1], base[2], apex, pyramid_mat));
+    scene_add_triangle(&world, triangle_create(base[2], base[3], apex, pyramid_mat));
+    scene_add_triangle(&world, triangle_create(base[3], base[0], apex, pyramid_mat));
     
     // Random small spheres
     for (int a = -11; a < 11; a++) {
@@ -163,7 +182,8 @@ int main(void) {
     // Create scene
     fprintf(stderr, "Creating scene...\n");
     create_random_scene();
-    fprintf(stderr, "Scene created with %d objects\n\n", world.count);
+    fprintf(stderr, "Scene created: %d spheres, %d planes, %d triangles\n\n", 
+            world.sphere_count, world.plane_count, world.triangle_count);
     
     // Render with multi-threading
     fprintf(stderr, "Rendering...\n");
