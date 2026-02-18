@@ -55,7 +55,6 @@ static inline int scene_hit(scene *s, ray *r, double t_min, double t_max, hit_re
             hit_anything = 1;
             closest_so_far = temp_rec.t;
             *rec = temp_rec;
-            rec->seed = temp_rec.seed;  // Restore seed pointer
         }
     }
     
@@ -65,7 +64,6 @@ static inline int scene_hit(scene *s, ray *r, double t_min, double t_max, hit_re
             hit_anything = 1;
             closest_so_far = temp_rec.t;
             *rec = temp_rec;
-            rec->seed = temp_rec.seed;  // Restore seed pointer
         }
     }
     
@@ -75,7 +73,6 @@ static inline int scene_hit(scene *s, ray *r, double t_min, double t_max, hit_re
             hit_anything = 1;
             closest_so_far = temp_rec.t;
             *rec = temp_rec;
-            rec->seed = temp_rec.seed;  // Restore seed pointer
         }
     }
     

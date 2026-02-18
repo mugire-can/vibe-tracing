@@ -166,9 +166,6 @@ void create_random_scene() {
 }
 
 int main(void) {
-    // Seed random number generator
-    srand(time(NULL));
-    
     fprintf(stderr, "Vibe Tracing - High Performance Raytracer\n");
     fprintf(stderr, "Image: %dx%d, Samples: %d, Max Depth: %d\n", 
             IMAGE_WIDTH, IMAGE_HEIGHT, SAMPLES_PER_PIXEL, MAX_DEPTH);
