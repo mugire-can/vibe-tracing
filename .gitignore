@@ -1,0 +1,7 @@
+*.o
+*.ppm
+raytracer
+*.out
+*.dSYM/
+.vscode/
+.DS_Store
