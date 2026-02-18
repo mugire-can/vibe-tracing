@@ -95,11 +95,45 @@ This will:
 
 **Expected output:**
 ```
-Rendering 1200x675 image with 50 samples/pixel, 8 threads...
-Render complete in 67.45 seconds.
+Rendering 1600x900 image with 100 samples/pixel, 8 threads...
+Render complete in ~120-180 seconds.
 Done.
 Output written to output.ppm
 ```
+
+### Animation - Creating a Dynamic Video
+
+For a stunning animated sequence with moving objects, rotating camera, and dynamic lighting:
+
+```bash
+make animate
+```
+
+This creates **300 frames** (10 seconds at 30fps) with:
+- **Camera orbiting** the scene with height variation
+- **Animated spheres** - pulsing, rotating, and moving in orbital patterns
+- **Bouncing small objects** with sinusoidal motion
+- **Rotating pyramid** with metallic reflections
+- **High-quality rendering** - 1600x900 resolution with 100 samples/pixel
+
+**Expected time:** ~15-25 minutes for all frames
+
+### Converting Frames to Video
+
+To create an MP4 video from the rendered frames:
+
+```bash
+# Make sure FFmpeg is installed
+sudo apt install ffmpeg
+
+# Then run
+make video
+```
+
+This creates `output.mp4` with:
+- H.264 codec with high quality (CRF 18)
+- 30 fps playback
+- Smooth motion with interpolation
 
 ### Viewing the Output
 

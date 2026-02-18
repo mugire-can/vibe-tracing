@@ -5,7 +5,7 @@ LDFLAGS = -lpthread -lm
 TARGET = raytracer
 SRC = main.c
 
-.PHONY: all clean run debug benchmark
+.PHONY: all clean run debug benchmark animate video
 
 all: $(TARGET)
 
@@ -20,9 +20,23 @@ run: $(TARGET)
 	./$(TARGET) > output.ppm
 	@echo "Output written to output.ppm"
 
+animate: $(TARGET)
+	@echo "Rendering 300-frame animation (10 seconds at 30fps)..."
+	./$(TARGET)
+	@echo "Frames rendered. To create video, run: make video"
+
+video: animate
+	@echo "Creating MP4 video from frames..."
+	@if command -v ffmpeg >/dev/null 2>&1; then \
+		ffmpeg -framerate 30 -i frame_%04d.ppm -c:v libx264 -pix_fmt yuv420p -crf 18 -preset slow output.mp4; \
+		echo "Video created: output.mp4"; \
+	else \
+		echo "FFmpeg not found. Install with: sudo apt install ffmpeg"; \
+	fi
+
+clean:
+	rm -f $(TARGET) *.ppm *.o frame_*.ppm output.mp4
+
 benchmark: $(TARGET)
 	@echo "Running benchmark..."
 	@time ./$(TARGET) > /dev/null
-
-clean:
-	rm -f $(TARGET) *.ppm *.o

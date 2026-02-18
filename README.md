@@ -6,13 +6,16 @@ A high-performance raytracer written in C with advanced features and multi-threa
 
 **New to this project?** Start here:
 - 📚 **[Getting Started Guide](GETTING_STARTED.md)** - Installation and first render
+- 🎬 **[Animation Guide](ANIMATION_GUIDE.md)** - Create dynamic ray-traced videos
 - 🔍 **[Project Overview](PROJECT_OVERVIEW.md)** - Architecture and design philosophy
 - 🐛 **[Troubleshooting](TROUBLESHOOTING.md)** - Common issues and solutions
 - 🤝 **[Contributing](CONTRIBUTING.md)** - Development guidelines
 
-**Quick build and run:**
+**Quick commands:**
 ```bash
-make run    # Creates output.ppm
+make run        # Create single high-quality frame (~4.5 min)
+make animate    # Create 300-frame animation (10 sec video, ~3-4 hours)
+make video      # Convert frames to MP4 (requires ffmpeg)
 ```
 
 ## Features
@@ -44,6 +47,16 @@ make run    # Creates output.ppm
   - Checker patterns
   - Perlin noise (procedural textures)
 
+### Animation Features ✨ NEW
+- **Dynamic camera movement**: Orbiting, height variation, zoom effects
+- **Animated objects**: 
+  - Pulsing spheres (breathe in/out)
+  - Orbiting spheres with multiple speeds
+  - Rotating geometric primitives
+  - Sinusoidal floating motion
+- **Multi-frame rendering**: 300 frames at 30fps for smooth 10-second videos
+- **Video export**: Automatic MP4 creation with FFmpeg
+
 ### Performance Optimizations
 - **SIMD-friendly vector operations**: Inline functions with compiler hints
 - **Fast-math compiler optimizations**: -O3, -march=native, -ffast-math
@@ -59,11 +72,14 @@ make run    # Creates output.ppm
 - Procedural scene generation
 - Complex materials and lighting
 
-## Building
+## Building & Running
 
 Build the optimized raytracer:
 ```bash
-make
+make              # Compile
+make run          # Single frame (1600x900, 100 samples, ~4.5 min)
+make animate      # 300-frame animation (~2.5-4 hours)
+make video        # Convert frames to MP4
 ```
 
 For debug build with symbols:
@@ -78,16 +94,31 @@ make clean
 
 ## Usage
 
+### Single Frame Rendering
+
 Generate a high-quality raytraced image:
 ```bash
-make run
+make run          # Creates output.ppm (1600x900, 100 samples/pixel)
 ```
 
-This will create `output.ppm` which can be viewed with any PPM-compatible image viewer or converted to other formats using tools like ImageMagick:
-
+View or convert the output:
 ```bash
 convert output.ppm output.png
+display output.ppm
 ```
+
+### Animation & Video Creation
+
+For stunning animated ray-traced videos with dynamic lighting and moving objects:
+
+```bash
+make animate      # Renders 300 frames (10 second video)
+make video        # Convert frames to MP4 (requires ffmpeg)
+```
+
+**See [ANIMATION_GUIDE.md](ANIMATION_GUIDE.md) for detailed animation instructions**
+
+### Direct Execution
 
 Run directly to stdout:
 ```bash
