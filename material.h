@@ -9,7 +9,8 @@
 typedef enum {
     MATERIAL_LAMBERTIAN,
     MATERIAL_METAL,
-    MATERIAL_DIELECTRIC
+    MATERIAL_DIELECTRIC,
+    MATERIAL_EMISSIVE
 } material_type;
 
 typedef struct {
@@ -17,6 +18,8 @@ typedef struct {
     color albedo;
     double fuzz;        // For metal
     double ref_idx;     // For dielectric
+    color emission;     // For emissive materials
+    double emission_strength; // For emissive materials
 } material;
 
 typedef struct {
@@ -67,7 +70,11 @@ static inline double reflectance(double cosine, double ref_idx) {
 
 static inline int material_scatter(material *mat, ray *r_in, hit_record *rec, 
                                     color *attenuation, ray *scattered) {
-    if (mat->type == MATERIAL_LAMBERTIAN) {
+    if (mat->type == MATERIAL_EMISSIVE) {
+        // Emissive materials don't scatter light
+        return 0;
+    }
+    else if (mat->type == MATERIAL_LAMBERTIAN) {
         vec3 scatter_direction = vec3_add(rec->normal, random_unit_vector());
         
         // Catch degenerate scatter direction
@@ -111,6 +118,13 @@ static inline int material_scatter(material *mat, ray *r_in, hit_record *rec,
     }
     
     return 0;
+}
+
+static inline color material_emit(material *mat) {
+    if (mat->type == MATERIAL_EMISSIVE) {
+        return vec3_mul(mat->emission, mat->emission_strength);
+    }
+    return (color){0, 0, 0};
 }
 
 #endif

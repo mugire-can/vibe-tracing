@@ -44,12 +44,13 @@ color ray_color(ray *r, int depth) {
     if (scene_hit(&world, r, 0.001, INFINITY, &rec)) {
         ray scattered;
         color attenuation;
+        color emitted = material_emit(&rec.mat);
         
         if (material_scatter(&rec.mat, r, &rec, &attenuation, &scattered)) {
             color next_color = ray_color(&scattered, depth - 1);
-            return vec3_mult(attenuation, next_color);
+            return vec3_add(emitted, vec3_mult(attenuation, next_color));
         }
-        return (color){0, 0, 0};
+        return emitted;
     }
     
     // Background gradient
@@ -96,11 +97,15 @@ void create_random_scene() {
     scene_init(&world);
     
     // Ground plane (replaces ground sphere for better performance)
-    material ground_mat = {MATERIAL_LAMBERTIAN, {0.5, 0.5, 0.5}, 0, 0};
+    material ground_mat = {MATERIAL_LAMBERTIAN, {0.5, 0.5, 0.5}, 0, 0, {0, 0, 0}, 0};
     scene_add_plane(&world, (plane){{0, 0, 0}, {0, 1, 0}, ground_mat});
     
+    // Add a light source (emissive sphere above the scene)
+    material light_mat = {MATERIAL_EMISSIVE, {1.0, 1.0, 1.0}, 0, 0, {1.0, 1.0, 1.0}, 5.0};
+    scene_add_sphere(&world, (sphere){{0, 8, 0}, 1.5, light_mat});
+    
     // Add a pyramid using triangles
-    material pyramid_mat = {MATERIAL_METAL, {0.9, 0.5, 0.1}, 0.1, 0};
+    material pyramid_mat = {MATERIAL_METAL, {0.9, 0.5, 0.1}, 0.1, 0, {0, 0, 0}, 0};
     point3 base[4] = {
         {6, 0, -2},
         {8, 0, -2},
@@ -127,15 +132,15 @@ void create_random_scene() {
                 if (choose_mat < 0.8) {
                     // Diffuse
                     color albedo = vec3_mult(random_vec3(), random_vec3());
-                    sphere_mat = (material){MATERIAL_LAMBERTIAN, albedo, 0, 0};
+                    sphere_mat = (material){MATERIAL_LAMBERTIAN, albedo, 0, 0, {0, 0, 0}, 0};
                 } else if (choose_mat < 0.95) {
                     // Metal
                     color albedo = random_vec3_range(0.5, 1.0);
                     double fuzz = (double)rand() / RAND_MAX * 0.5;
-                    sphere_mat = (material){MATERIAL_METAL, albedo, fuzz, 0};
+                    sphere_mat = (material){MATERIAL_METAL, albedo, fuzz, 0, {0, 0, 0}, 0};
                 } else {
                     // Glass
-                    sphere_mat = (material){MATERIAL_DIELECTRIC, {1.0, 1.0, 1.0}, 0, 1.5};
+                    sphere_mat = (material){MATERIAL_DIELECTRIC, {1.0, 1.0, 1.0}, 0, 1.5, {0, 0, 0}, 0};
                 }
                 
                 scene_add_sphere(&world, (sphere){center, 0.2, sphere_mat});
@@ -144,13 +149,13 @@ void create_random_scene() {
     }
     
     // Three large spheres
-    material mat1 = {MATERIAL_DIELECTRIC, {1.0, 1.0, 1.0}, 0, 1.5};
+    material mat1 = {MATERIAL_DIELECTRIC, {1.0, 1.0, 1.0}, 0, 1.5, {0, 0, 0}, 0};
     scene_add_sphere(&world, (sphere){{0, 1, 0}, 1.0, mat1});
     
-    material mat2 = {MATERIAL_LAMBERTIAN, {0.4, 0.2, 0.1}, 0, 0};
+    material mat2 = {MATERIAL_LAMBERTIAN, {0.4, 0.2, 0.1}, 0, 0, {0, 0, 0}, 0};
     scene_add_sphere(&world, (sphere){{-4, 1, 0}, 1.0, mat2});
     
-    material mat3 = {MATERIAL_METAL, {0.7, 0.6, 0.5}, 0.0, 0};
+    material mat3 = {MATERIAL_METAL, {0.7, 0.6, 0.5}, 0.0, 0, {0, 0, 0}, 0};
     scene_add_sphere(&world, (sphere){{4, 1, 0}, 1.0, mat3});
 }
 
