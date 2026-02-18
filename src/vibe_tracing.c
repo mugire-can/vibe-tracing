@@ -60,6 +60,12 @@ void vibe_trace_log(trace_level_t level, const char *file, int line,
                     const char *function, const char *format, ...) {
     pthread_mutex_lock(&trace_mutex);
     
+    /* Validate trace level */
+    if (level < TRACE_LEVEL_DEBUG || level > TRACE_LEVEL_ERROR) {
+        pthread_mutex_unlock(&trace_mutex);
+        return;
+    }
+    
     /* Check if this level should be logged */
     if (level < min_trace_level) {
         pthread_mutex_unlock(&trace_mutex);
@@ -75,11 +81,12 @@ void vibe_trace_log(trace_level_t level, const char *file, int line,
     struct timespec ts;
     clock_gettime(CLOCK_REALTIME, &ts);
     
-    /* Format timestamp */
+    /* Format timestamp using thread-safe localtime_r */
     time_t seconds = ts.tv_sec;
-    struct tm *tm_info = localtime(&seconds);
+    struct tm tm_info;
+    localtime_r(&seconds, &tm_info);
     char time_buffer[64];
-    strftime(time_buffer, sizeof(time_buffer), "%Y-%m-%d %H:%M:%S", tm_info);
+    strftime(time_buffer, sizeof(time_buffer), "%Y-%m-%d %H:%M:%S", &tm_info);
     
     /* Print trace header */
     fprintf(trace_output, "[%s.%06ld] [%s] %s:%d (%s): ",

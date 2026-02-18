@@ -13,16 +13,6 @@ typedef enum {
     TRACE_LEVEL_ERROR
 } trace_level_t;
 
-/* Trace event structure */
-typedef struct {
-    trace_level_t level;
-    const char *file;
-    int line;
-    const char *function;
-    const char *message;
-    struct timespec timestamp;
-} trace_event_t;
-
 /* Initialize the tracing system */
 int vibe_trace_init(const char *output_file);
 
