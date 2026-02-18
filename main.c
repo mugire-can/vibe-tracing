@@ -1,4 +1,4 @@
-#define _POSIX_C_SOURCE 199309L
+#define _POSIX_C_SOURCE 200809L
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
@@ -59,7 +59,7 @@ static vec3 ray_color(ray r, scene *world, int depth) {
 
 static void *render_thread(void *arg) {
     thread_data *data = (thread_data *)arg;
-    srand(data->seed);
+    tl_seed = data->seed;
 
     for (int j = data->start_row; j < data->end_row; j++) {
         for (int i = 0; i < IMAGE_WIDTH; i++) {
@@ -80,6 +80,9 @@ static void *render_thread(void *arg) {
 
 static void build_scene(void) {
     scene_init(&world);
+
+    /* Initialize Perlin noise before threads are spawned */
+    perlin_init();
 
     /* Ground plane with checker pattern */
     texture ground_tex = texture_checker(
@@ -143,7 +146,7 @@ static void build_scene(void) {
 }
 
 int main(void) {
-    srand((unsigned int)time(NULL));
+    tl_seed = (unsigned int)time(NULL);
 
     /* Build scene */
     build_scene();

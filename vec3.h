@@ -54,6 +54,7 @@ static inline double vec3_length(vec3 v) {
 
 static inline vec3 vec3_unit(vec3 v) {
     double len = vec3_length(v);
+    if (len < 1e-15) return (vec3){0, 0, 0};
     return (vec3){v.x / len, v.y / len, v.z / len};
 }
 
@@ -73,9 +74,12 @@ static inline vec3 vec3_refract(vec3 uv, vec3 n, double etai_over_etat) {
     return vec3_add(r_out_perp, r_out_parallel);
 }
 
+/* Thread-local seed for thread-safe random number generation */
+static __thread unsigned int tl_seed;
+
 /* Random number helpers */
 static inline double random_double(void) {
-    return rand() / (RAND_MAX + 1.0);
+    return rand_r(&tl_seed) / ((double)RAND_MAX + 1.0);
 }
 
 static inline double random_double_range(double min, double max) {

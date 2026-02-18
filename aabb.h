@@ -15,7 +15,7 @@ static inline aabb aabb_create(vec3 min, vec3 max) {
 
 static inline int aabb_hit(aabb box, ray r, double t_min, double t_max) {
     /* X axis */
-    double invD = 1.0 / r.direction.x;
+    double invD = (fabs(r.direction.x) > 1e-15) ? 1.0 / r.direction.x : 1e15;
     double t0 = (box.min.x - r.origin.x) * invD;
     double t1 = (box.max.x - r.origin.x) * invD;
     if (invD < 0.0) { double tmp = t0; t0 = t1; t1 = tmp; }
@@ -24,7 +24,7 @@ static inline int aabb_hit(aabb box, ray r, double t_min, double t_max) {
     if (t_max <= t_min) return 0;
 
     /* Y axis */
-    invD = 1.0 / r.direction.y;
+    invD = (fabs(r.direction.y) > 1e-15) ? 1.0 / r.direction.y : 1e15;
     t0 = (box.min.y - r.origin.y) * invD;
     t1 = (box.max.y - r.origin.y) * invD;
     if (invD < 0.0) { double tmp = t0; t0 = t1; t1 = tmp; }
@@ -33,7 +33,7 @@ static inline int aabb_hit(aabb box, ray r, double t_min, double t_max) {
     if (t_max <= t_min) return 0;
 
     /* Z axis */
-    invD = 1.0 / r.direction.z;
+    invD = (fabs(r.direction.z) > 1e-15) ? 1.0 / r.direction.z : 1e15;
     t0 = (box.min.z - r.origin.z) * invD;
     t1 = (box.max.z - r.origin.z) * invD;
     if (invD < 0.0) { double tmp = t0; t0 = t1; t1 = tmp; }

@@ -4,6 +4,10 @@
 #include "vec3.h"
 #include "ray.h"
 
+#ifndef M_PI
+#define M_PI 3.14159265358979323846
+#endif
+
 typedef struct {
     vec3 origin;
     vec3 lower_left_corner;
@@ -17,7 +21,7 @@ static inline camera camera_create(vec3 lookfrom, vec3 lookat, vec3 vup,
                                      double vfov, double aspect_ratio,
                                      double aperture, double focus_dist) {
     camera cam;
-    double theta = vfov * 3.14159265358979323846 / 180.0;
+    double theta = vfov * M_PI / 180.0;
     double h = tan(theta / 2.0);
     double viewport_height = 2.0 * h;
     double viewport_width = aspect_ratio * viewport_height;
