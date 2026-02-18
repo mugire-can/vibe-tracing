@@ -20,16 +20,19 @@ typedef struct {
     double lens_radius;
 } camera;
 
-static inline vec3 random_in_unit_disk() {
-    while (1) {
+static inline vec3 random_in_unit_disk(unsigned int *seed) {
+    int max_iterations = 100;
+    for (int i = 0; i < max_iterations; i++) {
         vec3 p = (vec3){
-            2.0 * ((double)rand() / RAND_MAX) - 1.0,
-            2.0 * ((double)rand() / RAND_MAX) - 1.0,
+            2.0 * ((double)rand_r(seed) / RAND_MAX) - 1.0,
+            2.0 * ((double)rand_r(seed) / RAND_MAX) - 1.0,
             0.0
         };
         if (vec3_length_squared(p) < 1.0)
             return p;
     }
+    // Fallback: return center
+    return (vec3){0, 0, 0};
 }
 
 static inline camera camera_create(point3 lookfrom, point3 lookat, vec3 vup, 
@@ -60,8 +63,8 @@ static inline camera camera_create(point3 lookfrom, point3 lookat, vec3 vup,
     return cam;
 }
 
-static inline ray camera_get_ray(camera *cam, double s, double t) {
-    vec3 rd = vec3_mul(random_in_unit_disk(), cam->lens_radius);
+static inline ray camera_get_ray(camera *cam, double s, double t, unsigned int *seed) {
+    vec3 rd = vec3_mul(random_in_unit_disk(seed), cam->lens_radius);
     vec3 offset = vec3_add(vec3_mul(cam->u, rd.x), vec3_mul(cam->v, rd.y));
     
     return (ray){

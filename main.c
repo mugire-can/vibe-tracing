@@ -33,8 +33,9 @@ typedef struct {
     int thread_id;
 } thread_data;
 
-color ray_color(ray *r, int depth) {
+color ray_color(ray *r, int depth, unsigned int *seed) {
     hit_record rec;
+    rec.seed = seed;
     
     // Ray bounce limit reached
     if (depth <= 0)
@@ -47,7 +48,7 @@ color ray_color(ray *r, int depth) {
         color emitted = material_emit(&rec.mat);
         
         if (material_scatter(&rec.mat, r, &rec, &attenuation, &scattered)) {
-            color next_color = ray_color(&scattered, depth - 1);
+            color next_color = ray_color(&scattered, depth - 1, seed);
             return vec3_add(emitted, vec3_mult(attenuation, next_color));
         }
         return emitted;
@@ -74,8 +75,8 @@ void *render_rows(void *arg) {
                 double u = (i + ((double)rand_r(&seed) / RAND_MAX)) / (IMAGE_WIDTH - 1);
                 double v = (j + ((double)rand_r(&seed) / RAND_MAX)) / (IMAGE_HEIGHT - 1);
                 
-                ray r = camera_get_ray(&cam, u, v);
-                color sample = ray_color(&r, MAX_DEPTH);
+                ray r = camera_get_ray(&cam, u, v, &seed);
+                color sample = ray_color(&r, MAX_DEPTH, &seed);
                 pixel_color = vec3_add(pixel_color, sample);
             }
             
@@ -95,6 +96,7 @@ void *render_rows(void *arg) {
 
 void create_random_scene() {
     scene_init(&world);
+    unsigned int seed = time(NULL);
     
     // Ground plane (replaces ground sphere for better performance)
     material ground_mat = {MATERIAL_LAMBERTIAN, {0.5, 0.5, 0.5}, 0, 0, {0, 0, 0}, 0};
@@ -123,20 +125,24 @@ void create_random_scene() {
     // Random small spheres
     for (int a = -11; a < 11; a++) {
         for (int b = -11; b < 11; b++) {
-            double choose_mat = (double)rand() / RAND_MAX;
-            point3 center = {a + 0.9 * rand() / (double)RAND_MAX, 0.2, b + 0.9 * rand() / (double)RAND_MAX};
+            double choose_mat = (double)rand_r(&seed) / RAND_MAX;
+            point3 center = {
+                a + 0.9 * rand_r(&seed) / (double)RAND_MAX, 
+                0.2, 
+                b + 0.9 * rand_r(&seed) / (double)RAND_MAX
+            };
             
             if (vec3_length(vec3_sub(center, (point3){4, 0.2, 0})) > 0.9) {
                 material sphere_mat;
                 
                 if (choose_mat < 0.8) {
                     // Diffuse
-                    color albedo = vec3_mult(random_vec3(), random_vec3());
+                    color albedo = vec3_mult(random_vec3(&seed), random_vec3(&seed));
                     sphere_mat = (material){MATERIAL_LAMBERTIAN, albedo, 0, 0, {0, 0, 0}, 0};
                 } else if (choose_mat < 0.95) {
                     // Metal
-                    color albedo = random_vec3_range(0.5, 1.0);
-                    double fuzz = (double)rand() / RAND_MAX * 0.5;
+                    color albedo = random_vec3_range(0.5, 1.0, &seed);
+                    double fuzz = (double)rand_r(&seed) / RAND_MAX * 0.5;
                     sphere_mat = (material){MATERIAL_METAL, albedo, fuzz, 0, {0, 0, 0}, 0};
                 } else {
                     // Glass

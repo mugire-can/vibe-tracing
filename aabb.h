@@ -3,6 +3,7 @@
 
 #include "vec3.h"
 #include "ray.h"
+#include "sphere.h"
 #include <math.h>
 
 typedef struct {

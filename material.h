@@ -29,18 +29,19 @@ typedef struct {
     double t;
     int front_face;
     material mat;
+    unsigned int *seed;  // Thread-local random seed
 } hit_record;
 
-static inline vec3 random_vec3() {
+static inline vec3 random_vec3(unsigned int *seed) {
     return (vec3){
-        (double)rand() / RAND_MAX,
-        (double)rand() / RAND_MAX,
-        (double)rand() / RAND_MAX
+        (double)rand_r(seed) / RAND_MAX,
+        (double)rand_r(seed) / RAND_MAX,
+        (double)rand_r(seed) / RAND_MAX
     };
 }
 
-static inline vec3 random_vec3_range(double min, double max) {
-    vec3 v = random_vec3();
+static inline vec3 random_vec3_range(double min, double max, unsigned int *seed) {
+    vec3 v = random_vec3(seed);
     double range = max - min;
     return (vec3){
         min + v.x * range,
@@ -49,16 +50,19 @@ static inline vec3 random_vec3_range(double min, double max) {
     };
 }
 
-static inline vec3 random_in_unit_sphere() {
-    while (1) {
-        vec3 p = random_vec3_range(-1.0, 1.0);
+static inline vec3 random_in_unit_sphere(unsigned int *seed) {
+    int max_iterations = 100;
+    for (int i = 0; i < max_iterations; i++) {
+        vec3 p = random_vec3_range(-1.0, 1.0, seed);
         if (vec3_length_squared(p) < 1.0)
             return p;
     }
+    // Fallback: return normalized random vector
+    return vec3_normalize(random_vec3_range(-1.0, 1.0, seed));
 }
 
-static inline vec3 random_unit_vector() {
-    return vec3_normalize(random_in_unit_sphere());
+static inline vec3 random_unit_vector(unsigned int *seed) {
+    return vec3_normalize(random_in_unit_sphere(seed));
 }
 
 static inline double reflectance(double cosine, double ref_idx) {
@@ -70,12 +74,14 @@ static inline double reflectance(double cosine, double ref_idx) {
 
 static inline int material_scatter(material *mat, ray *r_in, hit_record *rec, 
                                     color *attenuation, ray *scattered) {
+    unsigned int *seed = rec->seed;
+    
     if (mat->type == MATERIAL_EMISSIVE) {
         // Emissive materials don't scatter light
         return 0;
     }
     else if (mat->type == MATERIAL_LAMBERTIAN) {
-        vec3 scatter_direction = vec3_add(rec->normal, random_unit_vector());
+        vec3 scatter_direction = vec3_add(rec->normal, random_unit_vector(seed));
         
         // Catch degenerate scatter direction
         if (fabs(scatter_direction.x) < 1e-8 && 
@@ -92,7 +98,7 @@ static inline int material_scatter(material *mat, ray *r_in, hit_record *rec,
         vec3 reflected = vec3_reflect(r_in->direction, rec->normal);
         *scattered = (ray){
             rec->p, 
-            vec3_normalize(vec3_add(reflected, vec3_mul(random_in_unit_sphere(), mat->fuzz)))
+            vec3_normalize(vec3_add(reflected, vec3_mul(random_in_unit_sphere(seed), mat->fuzz)))
         };
         *attenuation = mat->albedo;
         return vec3_dot(scattered->direction, rec->normal) > 0;
@@ -107,7 +113,7 @@ static inline int material_scatter(material *mat, ray *r_in, hit_record *rec,
         int cannot_refract = refraction_ratio * sin_theta > 1.0;
         vec3 direction;
         
-        if (cannot_refract || reflectance(cos_theta, refraction_ratio) > ((double)rand() / RAND_MAX)) {
+        if (cannot_refract || reflectance(cos_theta, refraction_ratio) > ((double)rand_r(seed) / RAND_MAX)) {
             direction = vec3_reflect(r_in->direction, rec->normal);
         } else {
             direction = vec3_refract(r_in->direction, rec->normal, refraction_ratio);

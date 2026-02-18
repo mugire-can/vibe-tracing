@@ -50,6 +50,10 @@ static inline double vec3_length(vec3 v) {
 
 static inline vec3 vec3_normalize(vec3 v) {
     double len = vec3_length(v);
+    if (len < 1e-8) {
+        // Handle zero-length vector
+        return (vec3){0, 0, 0};
+    }
     return vec3_div(v, len);
 }
 
