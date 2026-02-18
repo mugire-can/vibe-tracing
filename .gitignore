@@ -9,6 +9,7 @@
 *.out
 *.app
 *.bin
+raytracer
 
 # Libraries
 *.lib
@@ -22,10 +23,13 @@
 # Build directories
 build/
 dist/
+
+# Debug symbols
 *.dSYM/
 
-# Test output
+# Test and render output
 test_results/
+*.ppm
 
 # Editor and IDE files
 .vscode/
@@ -33,6 +37,8 @@ test_results/
 *.swp
 *.swo
 *~
+
+# OS files
 .DS_Store
 
 # Dependency files
@@ -44,15 +50,3 @@ vgcore.*
 
 # CodeQL artifacts
 _codeql_detected_source_root
-build/
-*.o
-*.a
-*.o
-*.ppm
-raytracer
-*.out
-*.dSYM/
-.vscode/
-.DS_Store
-test_render.ppm
-preview.ppm
