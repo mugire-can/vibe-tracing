@@ -44,3 +44,15 @@ vgcore.*
 
 # CodeQL artifacts
 _codeql_detected_source_root
+build/
+*.o
+*.a
+*.o
+*.ppm
+raytracer
+*.out
+*.dSYM/
+.vscode/
+.DS_Store
+test_render.ppm
+preview.ppm
