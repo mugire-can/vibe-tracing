@@ -2,6 +2,19 @@
 
 A high-performance raytracer written in C with advanced features and multi-threading support.
 
+## Quick Start
+
+**New to this project?** Start here:
+- 📚 **[Getting Started Guide](GETTING_STARTED.md)** - Installation and first render
+- 🔍 **[Project Overview](PROJECT_OVERVIEW.md)** - Architecture and design philosophy
+- 🐛 **[Troubleshooting](TROUBLESHOOTING.md)** - Common issues and solutions
+- 🤝 **[Contributing](CONTRIBUTING.md)** - Development guidelines
+
+**Quick build and run:**
+```bash
+make run    # Creates output.ppm
+```
+
 ## Features
 
 ### Geometric Primitives
@@ -189,8 +202,35 @@ vibe-tracing/
 ├── scene.h      # Scene management
 ├── main.c       # Multi-threaded rendering loop
 ├── Makefile     # Build system
-└── README.md    # This file
+├── README.md    # This file
+└── docs/        # Documentation (see below)
 ```
+
+## Documentation
+
+- **[Getting Started Guide](GETTING_STARTED.md)** - Complete beginner's guide
+  - Installation instructions for all platforms
+  - Your first render walkthrough
+  - Configuration and customization
+  - Performance tips and presets
+
+- **[Project Overview](PROJECT_OVERVIEW.md)** - Deep dive into the project
+  - Architecture and design philosophy
+  - Technical implementation details
+  - Performance characteristics
+  - Code organization and modules
+
+- **[Troubleshooting Guide](TROUBLESHOOTING.md)** - Problem solving
+  - Build issues and solutions
+  - Runtime problems
+  - Platform-specific issues
+  - Debug mode and diagnostics
+
+- **[Contributing Guide](CONTRIBUTING.md)** - For contributors
+  - Development workflow
+  - Coding standards
+  - Testing guidelines
+  - Pull request process
 
 ## Example Scene
 
