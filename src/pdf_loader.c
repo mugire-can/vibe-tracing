@@ -232,8 +232,8 @@ pdf_error_t pdf_extract_text(const pdf_document_t *doc, int page,
     for (size_t i = 0; i + slen < doc->size; i++) {
         if (memcmp(doc->data + i, stream_tag, slen) != 0)
             continue;
-        /* Make sure it's not "endstream" */
-        if (i >= elen && memcmp(doc->data + i - 3, "end", 3) == 0)
+        /* Make sure this is "stream" and not "endstream" */
+        if (i >= 3 && memcmp(doc->data + i - 3, "end", 3) == 0)
             continue;
 
         /* Skip past "stream" and the newline */
@@ -254,8 +254,8 @@ pdf_error_t pdf_extract_text(const pdf_document_t *doc, int page,
         if (!end)
             continue;
 
-        /* Skip streams until we reach the desired page (rough heuristic) */
-        if (streams_found > 0 && streams_found <= page) {
+        /* Skip streams that do not belong to the target page */
+        if (streams_found != page) {
             streams_found++;
             i = (size_t)(end - doc->data) + elen - 1;
             continue;
@@ -284,6 +284,15 @@ pdf_error_t pdf_extract_text(const pdf_document_t *doc, int page,
         i = (size_t)(end - doc->data) + elen - 1;
     }
 
+    /* Ensure space for the null terminator */
+    if (pos >= cap) {
+        char *tmp = realloc(text, pos + 1);
+        if (!tmp) {
+            free(text);
+            return PDF_ERR_OUT_OF_MEMORY;
+        }
+        text = tmp;
+    }
     text[pos] = '\0';
     *text_out = text;
     *len_out = pos;
