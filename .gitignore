@@ -1,0 +1,9 @@
+*.o
+*.ppm
+raytracer
+*.out
+*.dSYM/
+.vscode/
+.DS_Store
+test_render.ppm
+preview.ppm
