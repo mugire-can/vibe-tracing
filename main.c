@@ -17,11 +17,11 @@
 #include "texture.h"
 
 /* Rendering configuration */
-#define IMAGE_WIDTH 1600
+#define IMAGE_WIDTH 1920
 #define ASPECT_RATIO (16.0 / 9.0)
 #define IMAGE_HEIGHT ((int)(IMAGE_WIDTH / ASPECT_RATIO))
-#define SAMPLES_PER_PIXEL 100
-#define MAX_DEPTH 50
+#define SAMPLES_PER_PIXEL 200
+#define MAX_DEPTH 100
 #define NUM_THREADS 8
 
 /* Animation configuration */
