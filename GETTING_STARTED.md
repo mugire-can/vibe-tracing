@@ -116,7 +116,9 @@ This creates **300 frames** (10 seconds at 30fps) with:
 - **Rotating pyramid** with metallic reflections
 - **High-quality rendering** - 1600x900 resolution with 100 samples/pixel
 
-**Expected time:** ~15-25 minutes for all frames
+**⏱️ Expected time:** ~2.5-4 hours for all 300 frames (~30-40 seconds per frame)
+
+**Note:** Creates separate executable `raytracer_anim` compiled with animation support
 
 ### Converting Frames to Video
 

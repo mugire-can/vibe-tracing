@@ -27,7 +27,9 @@
 /* Animation configuration */
 #define TOTAL_FRAMES 300
 #define FPS 30
-#define ENABLE_ANIMATION 0  /* Set to 1 for animation, 0 for static image */
+#ifndef ENABLE_ANIMATION
+#define ENABLE_ANIMATION 0  /* Default: static image. Override with -DENABLE_ANIMATION=1 */
+#endif
 
 /* Global scene and camera */
 static scene world;

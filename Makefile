@@ -3,6 +3,7 @@ CFLAGS = -O3 -march=native -ffast-math -Wall -Wextra -std=c11
 LDFLAGS = -lpthread -lm
 
 TARGET = raytracer
+TARGET_ANIM = raytracer_anim
 SRC = main.c
 
 .PHONY: all clean run debug benchmark animate video
@@ -12,6 +13,9 @@ all: $(TARGET)
 $(TARGET): $(SRC) vec3.h ray.h color.h camera.h material.h sphere.h plane.h triangle.h aabb.h scene.h texture.h
 	$(CC) $(CFLAGS) -o $(TARGET) $(SRC) $(LDFLAGS)
 
+$(TARGET_ANIM): $(SRC) vec3.h ray.h color.h camera.h material.h sphere.h plane.h triangle.h aabb.h scene.h texture.h
+	$(CC) $(CFLAGS) -DENABLE_ANIMATION=1 -o $(TARGET_ANIM) $(SRC) $(LDFLAGS)
+
 debug: CFLAGS = -g -O0 -Wall -Wextra -std=c11 -fsanitize=address
 debug: LDFLAGS += -fsanitize=address
 debug: $(TARGET)
@@ -20,9 +24,9 @@ run: $(TARGET)
 	./$(TARGET) > output.ppm
 	@echo "Output written to output.ppm"
 
-animate: $(TARGET)
+animate: $(TARGET_ANIM)
 	@echo "Rendering 300-frame animation (10 seconds at 30fps)..."
-	./$(TARGET)
+	./$(TARGET_ANIM)
 	@echo "Frames rendered. To create video, run: make video"
 
 video: animate
@@ -35,7 +39,7 @@ video: animate
 	fi
 
 clean:
-	rm -f $(TARGET) *.ppm *.o frame_*.ppm output.mp4
+	rm -f $(TARGET) $(TARGET_ANIM) *.ppm *.o frame_*.ppm output.mp4
 
 benchmark: $(TARGET)
 	@echo "Running benchmark..."
