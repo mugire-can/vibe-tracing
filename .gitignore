@@ -1,52 +1,45 @@
-# Object files
+# Build artifacts
+raytracer
+raytracer_anim
 *.o
-*.ko
-*.obj
-*.elf
-
-# Executables
+*.a
+*.so
 *.exe
 *.out
-*.app
 *.bin
-raytracer
 
-# Libraries
-*.lib
-*.a
-*.la
-*.lo
-*.so
-*.so.*
-*.dylib
-
-# Build directories
-build/
-dist/
-
-# Debug symbols
-*.dSYM/
-
-# Test and render output
-test_results/
+# Render output files
 *.ppm
+output.png
+output.mp4
+frame_*.ppm
 
-# Editor and IDE files
-.vscode/
-.idea/
+# OS specific files
+.DS_Store
+Thumbs.db
 *.swp
 *.swo
 *~
 
-# OS files
-.DS_Store
+# IDE and editor files
+.vscode/
+.idea/
+*.code-workspace
+.clangd
 
-# Dependency files
-*.d
-
-# Core dumps
+# Debug symbols and core dumps
+*.dSYM/
+*.su
 core
 vgcore.*
 
-# CodeQL artifacts
-_codeql_detected_source_root
+# Dependencies
+*.d
+
+# Temporary build directories
+build/
+dist/
+.build/
+
+# Test artifacts
+test_results/
