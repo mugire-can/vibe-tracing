@@ -1,6 +1,6 @@
 CC = gcc
 CFLAGS = -O3 -march=native -ffast-math -Wall -Wextra -std=c11
-LDFLAGS = -lpthread -lm
+LDFLAGS = -lpthread -lm -lrt
 
 TARGET = raytracer
 TARGET_ANIM = raytracer_anim
